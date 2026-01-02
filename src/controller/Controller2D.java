@@ -14,15 +14,14 @@ import java.awt.event.MouseEvent;
 
 public class Controller2D {
     private final Panel panel;
-    private Polygon polygon;
-
     private final int[] colors = {
-        0x00FFFF,  // Cyan
-        0x00BFFF,  // Deep Sky Blue
-        0xFF00FF,  // Magenta
-        0xCCFF00,  // Electric Lime
-        0xFF1493   // Deep Pink
+            0x00FFFF,  // Cyan
+            0xFF6600,  // Vivid Orange
+            0xFF00FF,  // Magenta
+            0xCCFF00,  // Electric Lime
+            0xFF1493   // Deep Pink
     };
+    private Polygon polygon;
     private int colorIndex = 0;
     private int color = colors[colorIndex];
 
