@@ -9,13 +9,13 @@ public class LineRasterizerBresenham extends LineRasterizer {
     }
 
     @Override
-    public void rasterize(Line line) {
-        rasterize(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+    public void rasterize(Line line, int color) {
+        rasterize(line.getX1(), line.getY1(), line.getX2(), line.getY2(), color);
     }
 
 
     @Override
-    public void rasterize(int x1, int y1, int x2, int y2) {
+    public void rasterize(int x1, int y1, int x2, int y2, int color) {
         int dx = Math.abs(x2 - x1);
         int dy = Math.abs(y2 - y1);
 
@@ -27,7 +27,7 @@ public class LineRasterizerBresenham extends LineRasterizer {
         int y = y1;
 
         while (true) {
-            raster.setPixel(x, y, 0xFFFF00);
+            raster.setPixel(x, y, color);
 
             if (x == x2 && y == y2) {
                 break;

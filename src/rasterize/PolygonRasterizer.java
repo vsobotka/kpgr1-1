@@ -17,7 +17,7 @@ public class PolygonRasterizer {
             Point a = polygon.getPoint(i);
             Point b = i + 1 == polygon.getSize() ? polygon.getPoint(0) : polygon.getPoint(i + 1);
 
-            lineRasterizer.rasterize(a.getX(), a.getY(), b.getX(), b.getY());
+            lineRasterizer.rasterize(a.getX(), a.getY(), b.getX(), b.getY(), b.getColor());
         }
     }
 }

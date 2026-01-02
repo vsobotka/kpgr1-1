@@ -16,6 +16,16 @@ public class Controller2D {
     private final Panel panel;
     private Polygon polygon;
 
+    private final int[] colors = {
+        0x00FFFF,  // Cyan
+        0x00BFFF,  // Deep Sky Blue
+        0xFF00FF,  // Magenta
+        0xCCFF00,  // Electric Lime
+        0xFF1493   // Deep Pink
+    };
+    private int colorIndex = 0;
+    private int color = colors[colorIndex];
+
     public Controller2D(Panel panel) {
         this.panel = panel;
         this.polygon = new Polygon();
@@ -40,6 +50,10 @@ public class Controller2D {
                 if (e.getKeyCode() == KeyEvent.VK_C) {
                     polygon = new Polygon();
                     drawScene();
+                } else if (e.getKeyCode() == KeyEvent.VK_R) {
+                    colorIndex = (colorIndex + 1) % colors.length;
+                    color = colors[colorIndex];
+                    drawScene();
                 }
             }
         });
@@ -47,7 +61,7 @@ public class Controller2D {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                polygon.addPoint(new Point(e.getX(), e.getY()));
+                polygon.addPoint(new Point(e.getX(), e.getY(), color));
 
                 drawScene();
             }
