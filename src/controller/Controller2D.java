@@ -2,8 +2,8 @@ package controller;
 
 import model.Point;
 import model.Polygon;
+import rasterize.FilledLineRasterizer;
 import rasterize.LineRasterizer;
-import rasterize.LineRasterizerBresenham;
 import rasterize.PolygonRasterizer;
 import view.Panel;
 
@@ -71,7 +71,7 @@ public class Controller2D {
     private void drawScene() {
         panel.getRaster().clear();
 
-        LineRasterizer lineRasterizer = new LineRasterizerBresenham(panel.getRaster());
+        LineRasterizer lineRasterizer = new FilledLineRasterizer(panel.getRaster());
         PolygonRasterizer polygonRasterizer = new PolygonRasterizer(lineRasterizer);
         polygonRasterizer.rasterize(polygon);
 

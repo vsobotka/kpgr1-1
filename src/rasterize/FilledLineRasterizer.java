@@ -3,8 +3,9 @@ package rasterize;
 import model.Line;
 import raster.RasterBufferedImage;
 
-public class LineRasterizerBresenham extends LineRasterizer {
-    public LineRasterizerBresenham(RasterBufferedImage raster) {
+// Raterizes line using Bresenham's algorithm
+public class FilledLineRasterizer extends LineRasterizer {
+    public FilledLineRasterizer(RasterBufferedImage raster) {
         super(raster);
     }
 
