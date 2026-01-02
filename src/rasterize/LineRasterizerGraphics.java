@@ -12,7 +12,7 @@ public class LineRasterizerGraphics extends LineRasterizer {
     }
 
     public void rasterize(Line line) {
-
+        rasterize(line.getX1(), line.getY1(), line.getX2(), line.getY2());
     }
 
     @Override
