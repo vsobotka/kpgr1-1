@@ -63,8 +63,9 @@ public class Controller2D {
                 Point currentPoint = new Point(e.getX(), e.getY(), color);
                 if (polygon.getSize() == 0) {
                     polygon.addPoint(currentPoint);
+                    polygon.addPoint(currentPoint);
                 } else {
-                    polygon.replaceLastPoint(currentPoint);
+                    polygon.addPoint(currentPoint);
                 }
 
                 drawScene();
@@ -72,7 +73,7 @@ public class Controller2D {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                polygon.addPoint(new Point(e.getX(), e.getY(), color));
+                polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color));
 
                 drawScene();
             }
