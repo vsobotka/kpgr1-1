@@ -3,7 +3,17 @@ package rasterize;
 import model.Line;
 import raster.RasterBufferedImage;
 
-// Raterizes line using Bresenham's algorithm
+/* Raterizes line using Bresenham's algorithm
+
+    Pros:
+    + fast and efficient
+    + integer arithmetic only
+
+    Cons:
+    - only straight lines
+    - produces aliased lines
+
+ */
 public class FilledLineRasterizer extends LineRasterizer {
     public FilledLineRasterizer(RasterBufferedImage raster) {
         super(raster);
