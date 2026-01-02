@@ -13,6 +13,10 @@ public class Polygon {
         this.points.add(p);
     }
 
+    public void replaceLastPoint(Point p) {
+        this.points.set(points.size() - 1, p);
+    }
+
     public int getSize() {
         return points.size();
     }

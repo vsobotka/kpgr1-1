@@ -59,8 +59,29 @@ public class Controller2D {
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
+                Point currentPoint = new Point(e.getX(), e.getY(), color);
+                if (polygon.getSize() == 0) {
+                    polygon.addPoint(currentPoint);
+                } else {
+                    polygon.replaceLastPoint(currentPoint);
+                }
+
+                drawScene();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
                 polygon.addPoint(new Point(e.getX(), e.getY(), color));
+
+                drawScene();
+            }
+        });
+
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color));
 
                 drawScene();
             }
