@@ -1,10 +1,9 @@
 package controller;
 
-import model.Line;
 import model.Point;
 import model.Polygon;
 import rasterize.LineRasterizer;
-import rasterize.LineRasterizerGraphics;
+import rasterize.LineRasterizerBresenham;
 import rasterize.PolygonRasterizer;
 import view.Panel;
 
@@ -15,9 +14,7 @@ import java.awt.event.MouseEvent;
 
 public class Controller2D {
     private final Panel panel;
-
     private Polygon polygon;
-    private Line line;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -60,7 +57,7 @@ public class Controller2D {
     private void drawScene() {
         panel.getRaster().clear();
 
-        LineRasterizer lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
+        LineRasterizer lineRasterizer = new LineRasterizerBresenham(panel.getRaster());
         PolygonRasterizer polygonRasterizer = new PolygonRasterizer(lineRasterizer);
         polygonRasterizer.rasterize(polygon);
 
