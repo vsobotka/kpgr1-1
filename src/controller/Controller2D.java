@@ -22,6 +22,7 @@ public class Controller2D {
             0xCCFF00,  // Electric Lime
             0xFF1493   // Deep Pink
     };
+
     private Polygon polygon;
     private int colorIndex = 0;
     private int color = colors[colorIndex];
@@ -104,8 +105,15 @@ public class Controller2D {
 
     private void renderUI() {
         Graphics g = panel.getRaster().getImage().getGraphics();
-        g.setColor(java.awt.Color.WHITE);
+        g.setColor(Color.WHITE);
+
         g.drawString("Polygon size: " + polygon.getSize(), 10, 20);
+        g.drawString("[C] Clear screen", 10, 40);
+
+        g.setColor(new Color(color));
+        g.drawString("[R] Change color", 10, 60);
+        g.setColor(Color.WHITE);
+
         g.dispose();
     }
 }
