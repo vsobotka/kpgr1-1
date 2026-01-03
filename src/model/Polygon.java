@@ -32,4 +32,8 @@ public class Polygon {
     public void insertPoint(Point p, int index) {
         points.add(index, p);
     }
+
+    public void removePoint(int index) {
+        points.remove(index);
+    }
 }

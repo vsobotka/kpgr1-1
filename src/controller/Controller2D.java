@@ -76,6 +76,16 @@ public class Controller2D {
                     }
                 } else if (e.getKeyCode() == KeyEvent.VK_E) {
                     editMode = !editMode;
+                } else if (e.getKeyCode() == KeyEvent.VK_X) {
+                    if (!editMode || highlightedPointIndex == -1) return;
+
+                    if (polygon.getSize() <= 2) {
+                        clearHighlightedPoint();
+                        polygon = new Polygon();
+                    } else {
+                        polygon.removePoint(highlightedPointIndex);
+                        clearHighlightedPoint();
+                    }
                 }
 
                 drawScene();
@@ -213,6 +223,10 @@ public class Controller2D {
             } else {
                 g.drawString("[SHIFT] Snap OFF", 10, 120);
             }
+        }
+
+        if (editMode) {
+            g.drawString("[X] Remove highlighted point", 10, 120);
         }
 
         if (editMode && highlightedPointIndex >= 0) {
