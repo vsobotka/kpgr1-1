@@ -28,6 +28,8 @@ public class Controller2D {
     private int color = colors[colorIndex];
     private boolean snap = false;
     private boolean interpolate = false;
+    private boolean editMode = false;
+    private int highlightedPointIndex = -1;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -54,10 +56,22 @@ public class Controller2D {
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     colorIndex = (colorIndex + 1) % colors.length;
                     color = colors[colorIndex];
+                    if (editMode && highlightedPointIndex >= 0) {
+                        Point oldPoint = polygon.getPoint(highlightedPointIndex);
+                        polygon.setPoint(new Point(oldPoint.getX(), oldPoint.getY(), color, oldPoint.isInterpolate()), highlightedPointIndex);
+                    }
                 } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    if (editMode) return;
+
                     snap = !snap;
                 } else if (e.getKeyCode() == KeyEvent.VK_I) {
                     interpolate = !interpolate;
+                    if (editMode && highlightedPointIndex >= 0) {
+                        Point oldPoint = polygon.getPoint(highlightedPointIndex);
+                        polygon.setPoint(new Point(oldPoint.getX(), oldPoint.getY(), oldPoint.getColor(), interpolate), highlightedPointIndex);
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_E) {
+                    editMode = !editMode;
                 }
 
                 drawScene();
@@ -67,6 +81,8 @@ public class Controller2D {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                if (editMode) return;
+
                 if (polygon.getSize() == 0) {
                     Point currentPoint = new Point(e.getX(), e.getY(), color, interpolate);
                     polygon.addPoint(currentPoint);
@@ -83,6 +99,16 @@ public class Controller2D {
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                if (editMode) {
+                    if (highlightedPointIndex >= 0) {
+                        Point previousPoint = polygon.getPoint(highlightedPointIndex);
+                        polygon.setPoint(new Point(e.getX(), e.getY(), previousPoint.getColor(), previousPoint.isInterpolate()), highlightedPointIndex);
+                    }
+
+                    drawScene();
+                    return;
+                }
+
                 if (snap) {
                     Point previousPoint = polygon.getPoint(polygon.getSize() - 2);
                     polygon.replaceLastPoint(createPointWithAdjustedPosition(previousPoint.getX(), previousPoint.getY(), e.getX(), e.getY()));
@@ -90,6 +116,26 @@ public class Controller2D {
                     polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color, interpolate));
                 }
 
+                drawScene();
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (!editMode) return;
+
+                for (int i = 0; i < polygon.getSize(); i++) {
+                    Point point = polygon.getPoint(i);
+
+                    if (Math.abs(point.getX() - e.getX()) < 10 && Math.abs(point.getY() - e.getY()) < 10) {
+                        highlightedPointIndex = i;
+                        interpolate = point.isInterpolate();
+                        color = point.getColor();
+                        drawScene();
+                        return;
+                    }
+                }
+
+                highlightedPointIndex = -1;
                 drawScene();
             }
         });
@@ -117,20 +163,35 @@ public class Controller2D {
         g.drawString("[R] Color", 10, 60);
         g.setColor(Color.WHITE);
 
-        if (snap) {
-            g.setColor(new Color(colors[0]));
-            g.drawString("[SHIFT] Snap ON", 10, 80);
-            g.setColor(Color.WHITE);
-        } else {
-            g.drawString("[SHIFT] Snap OFF", 10, 80);
-        }
-
         if (interpolate) {
             g.setColor(new Color(colors[0]));
-            g.drawString("[I] Interpolate ON", 10, 100);
+            g.drawString("[I] Interpolate ON", 10, 80);
             g.setColor(Color.WHITE);
         } else {
-            g.drawString("[I] Interpolate OFF", 10, 100);
+            g.drawString("[I] Interpolate OFF", 10, 80);
+        }
+
+        if (editMode) {
+            g.setColor(new Color(colors[0]));
+            g.drawString("[E] Edit mode ON", 10, 100);
+            g.setColor(Color.WHITE);
+        } else {
+            g.drawString("[E] Edit mode OFF", 10, 100);
+        }
+
+        if (!editMode) {
+            if (snap) {
+                g.setColor(new Color(colors[0]));
+                g.drawString("[SHIFT] Snap ON", 10, 120);
+                g.setColor(Color.WHITE);
+            } else {
+                g.drawString("[SHIFT] Snap OFF", 10, 120);
+            }
+        }
+
+        if (editMode && highlightedPointIndex >= 0) {
+            g.setColor(Color.RED);
+            g.drawRect(polygon.getPoint(highlightedPointIndex).getX() - 5, polygon.getPoint(highlightedPointIndex).getY() - 5, 10, 10);
         }
 
         g.dispose();

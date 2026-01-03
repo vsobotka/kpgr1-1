@@ -24,4 +24,8 @@ public class Polygon {
     public Point getPoint(int index) {
         return points.get(index);
     }
+
+    public void setPoint(Point p, int index) {
+        points.set(index, p);
+    }
 }
