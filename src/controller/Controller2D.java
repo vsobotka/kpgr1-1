@@ -251,10 +251,10 @@ public class Controller2D {
         int dY = Math.abs(y - prevY);
 
         if (dX > dY * 2) {
-            // dx is significantly higher than dy, vertical
+            // dx is significantly higher than dy, horizontal
             return new Point(x, prevY, color, interpolate);
         } else if (dY > dX * 2) {
-            // dy is significantly higher than dx, horizontal
+            // dy is significantly higher than dx, vertical
             return new Point(prevX, y, color, interpolate);
         } else {
             // diagonal, insignificant difference
