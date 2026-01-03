@@ -27,6 +27,7 @@ public class Controller2D {
     private int colorIndex = 0;
     private int color = colors[colorIndex];
     private boolean snap = false;
+    private boolean interpolate = false;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -55,6 +56,8 @@ public class Controller2D {
                     color = colors[colorIndex];
                 } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     snap = !snap;
+                } else if (e.getKeyCode() == KeyEvent.VK_I) {
+                    interpolate = !interpolate;
                 }
 
                 drawScene();
@@ -65,7 +68,7 @@ public class Controller2D {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (polygon.getSize() == 0) {
-                    Point currentPoint = new Point(e.getX(), e.getY(), color);
+                    Point currentPoint = new Point(e.getX(), e.getY(), color, interpolate);
                     polygon.addPoint(currentPoint);
                     polygon.addPoint(currentPoint);
                 } else {
@@ -84,7 +87,7 @@ public class Controller2D {
                     Point previousPoint = polygon.getPoint(polygon.getSize() - 2);
                     polygon.replaceLastPoint(createPointWithAdjustedPosition(previousPoint.getX(), previousPoint.getY(), e.getX(), e.getY()));
                 } else {
-                    polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color));
+                    polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color, interpolate));
                 }
 
                 drawScene();
@@ -108,18 +111,26 @@ public class Controller2D {
         g.setColor(Color.WHITE);
 
         g.drawString("Polygon size: " + polygon.getSize(), 10, 20);
-        g.drawString("[C] Clear screen", 10, 40);
+        g.drawString("[C] Clear", 10, 40);
 
         g.setColor(new Color(color));
-        g.drawString("[R] Change color", 10, 60);
+        g.drawString("[R] Color", 10, 60);
         g.setColor(Color.WHITE);
 
         if (snap) {
             g.setColor(new Color(colors[0]));
-            g.drawString("[SHIFT] Snap ACTIVE", 10, 80);
+            g.drawString("[SHIFT] Snap ON", 10, 80);
             g.setColor(Color.WHITE);
         } else {
-            g.drawString("[SHIFT] Snap", 10, 80);
+            g.drawString("[SHIFT] Snap OFF", 10, 80);
+        }
+
+        if (interpolate) {
+            g.setColor(new Color(colors[0]));
+            g.drawString("[I] Interpolate ON", 10, 100);
+            g.setColor(Color.WHITE);
+        } else {
+            g.drawString("[I] Interpolate OFF", 10, 100);
         }
 
         g.dispose();
@@ -127,7 +138,7 @@ public class Controller2D {
 
     private Point createPointWithAdjustedPosition(int prevX, int prevY, int x, int y) {
         if (!snap) {
-            return new Point(x, y, color);
+            return new Point(x, y, color, interpolate);
         }
 
         int dX = Math.abs(x - prevX);
@@ -135,16 +146,16 @@ public class Controller2D {
 
         if (dX > dY * 2) {
             // dx is significantly higher than dy, horizontal
-            return new Point(x, prevY, color);
+            return new Point(x, prevY, color, interpolate);
         } else if (dY > dX * 2) {
             // dy is significantly higher than dx, horizontal
-            return new Point(prevX, y, color);
+            return new Point(prevX, y, color, interpolate);
         } else {
             // diagonal, insignificant difference
             int distance = Math.max(dX, dY);
             int signX = x > prevX ? 1 : -1;
             int signY = y > prevY ? 1 : -1;
-            return new Point(prevX + signX * distance, prevY + signY * distance, color);
+            return new Point(prevX + signX * distance, prevY + signY * distance, color, interpolate);
         }
     }
 }
