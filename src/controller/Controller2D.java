@@ -7,6 +7,7 @@ import rasterize.LineRasterizer;
 import rasterize.PolygonRasterizer;
 import view.Panel;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -30,6 +31,7 @@ public class Controller2D {
         this.polygon = new Polygon();
 
         initListeners();
+        drawScene();
     }
 
     private void initListeners() {
@@ -95,7 +97,15 @@ public class Controller2D {
         LineRasterizer lineRasterizer = new FilledLineRasterizer(panel.getRaster());
         PolygonRasterizer polygonRasterizer = new PolygonRasterizer(lineRasterizer);
         polygonRasterizer.rasterize(polygon);
+        renderUI();
 
         panel.repaint();
+    }
+
+    private void renderUI() {
+        Graphics g = panel.getRaster().getImage().getGraphics();
+        g.setColor(java.awt.Color.WHITE);
+        g.drawString("Polygon size: " + polygon.getSize(), 10, 20);
+        g.dispose();
     }
 }
