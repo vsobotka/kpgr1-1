@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 public class RasterBufferedImage implements Raster {
 
-    private BufferedImage image;
+    private final BufferedImage image;
 
     public RasterBufferedImage(int width, int height) {
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -13,13 +13,13 @@ public class RasterBufferedImage implements Raster {
 
     @Override
     public void setPixel(int x, int y, int color) {
-        // TODO: ošetřit zápis mimo raster
-        image.setRGB(x, y, color);
+        if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
+            image.setRGB(x, y, color);
+        }
     }
 
     @Override
     public int getPixel(int x, int y) {
-        // TODO: druhá úloha
         return 0;
     }
 
