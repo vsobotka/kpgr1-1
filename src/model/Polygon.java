@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class Polygon {
-    private ArrayList<Point> points;
+    private final ArrayList<Point> points;
 
     public Polygon() {
         this.points = new ArrayList<>();
@@ -27,5 +27,9 @@ public class Polygon {
 
     public void setPoint(Point p, int index) {
         points.set(index, p);
+    }
+
+    public void insertPoint(Point p, int index) {
+        points.add(index, p);
     }
 }

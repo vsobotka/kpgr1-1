@@ -30,6 +30,8 @@ public class Controller2D {
     private boolean interpolate = false;
     private boolean editMode = false;
     private int highlightedPointIndex = -1;
+    private Point previewPoint = null;
+    private int previewLineIndex = -1;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -81,7 +83,17 @@ public class Controller2D {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (editMode) return;
+                if (editMode) {
+                    if (previewPoint != null) {
+                        polygon.insertPoint(previewPoint, previewLineIndex + 1);
+                        clearHighlightedPoint();
+                        clearPreviewPoint();
+                        checkPointProximity(e.getX(), e.getY());
+                        drawScene();
+                    }
+
+                    return;
+                }
 
                 if (polygon.getSize() == 0) {
                     Point currentPoint = new Point(e.getX(), e.getY(), color, interpolate);
@@ -123,19 +135,31 @@ public class Controller2D {
             public void mouseMoved(MouseEvent e) {
                 if (!editMode) return;
 
-                for (int i = 0; i < polygon.getSize(); i++) {
-                    Point point = polygon.getPoint(i);
+                if (checkPointProximity(e.getX(), e.getY())) return;
 
-                    if (Math.abs(point.getX() - e.getX()) < 10 && Math.abs(point.getY() - e.getY()) < 10) {
-                        highlightedPointIndex = i;
-                        interpolate = point.isInterpolate();
-                        color = point.getColor();
-                        drawScene();
-                        return;
+                clearPreviewPoint();
+
+                for (int i = 0; i < polygon.getSize(); i++) {
+                    Point p1 = polygon.getPoint(i);
+                    Point p2 = polygon.getPoint(i + 1 == polygon.getSize() ? 0 : i + 1);
+
+                    int steps = Math.max(Math.abs(p2.getX() - p1.getX()), Math.abs(p2.getY() - p1.getY()));
+
+                    for (int step = 0; step <= steps; step++) {
+                        int px = p1.getX() + (p2.getX() - p1.getX()) * step / steps;
+                        int py = p1.getY() + (p2.getY() - p1.getY()) * step / steps;
+
+                        if (Math.abs(px - e.getX()) < 10 && Math.abs(py - e.getY()) < 10) {
+                            previewPoint = new Point(px, py, color, interpolate);
+                            previewLineIndex = i;
+                            clearHighlightedPoint();
+                            break;
+                        }
                     }
+
+                    if (previewPoint != null) break;
                 }
 
-                highlightedPointIndex = -1;
                 drawScene();
             }
         });
@@ -194,6 +218,11 @@ public class Controller2D {
             g.drawRect(polygon.getPoint(highlightedPointIndex).getX() - 5, polygon.getPoint(highlightedPointIndex).getY() - 5, 10, 10);
         }
 
+        if (editMode && previewPoint != null) {
+            g.setColor(Color.YELLOW);
+            g.fillOval(previewPoint.getX() - 5, previewPoint.getY() - 5, 10, 10);
+        }
+
         g.dispose();
     }
 
@@ -218,5 +247,33 @@ public class Controller2D {
             int signY = y > prevY ? 1 : -1;
             return new Point(prevX + signX * distance, prevY + signY * distance, color, interpolate);
         }
+    }
+
+    private boolean checkPointProximity(int x, int y) {
+        for (int i = 0; i < polygon.getSize(); i++) {
+            Point point = polygon.getPoint(i);
+            int dx = Math.abs(point.getX() - x);
+            int dy = Math.abs(point.getY() - y);
+
+            if (dx < 10 && dy < 10) {
+                highlightedPointIndex = i;
+                interpolate = point.isInterpolate();
+                color = point.getColor();
+                clearPreviewPoint();
+                drawScene();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void clearPreviewPoint() {
+        previewPoint = null;
+        previewLineIndex = -1;
+    }
+
+    private void clearHighlightedPoint() {
+        highlightedPointIndex = -1;
     }
 }
