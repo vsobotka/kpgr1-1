@@ -54,6 +54,8 @@ public class Controller2D {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_C) {
+                    clearPreviewPoint();
+                    clearHighlightedPoint();
                     polygon = new Polygon();
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     colorIndex = (colorIndex + 1) % colors.length;
