@@ -26,6 +26,7 @@ public class Controller2D {
     private Polygon polygon;
     private int colorIndex = 0;
     private int color = colors[colorIndex];
+    private boolean snap = false;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -39,44 +40,38 @@ public class Controller2D {
         panel.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_C) {
                     polygon = new Polygon();
-                    drawScene();
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     colorIndex = (colorIndex + 1) % colors.length;
                     color = colors[colorIndex];
-                    drawScene();
+                } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    snap = !snap;
                 }
+
+                drawScene();
             }
         });
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Point currentPoint = new Point(e.getX(), e.getY(), color);
                 if (polygon.getSize() == 0) {
+                    Point currentPoint = new Point(e.getX(), e.getY(), color);
                     polygon.addPoint(currentPoint);
                     polygon.addPoint(currentPoint);
                 } else {
-                    polygon.addPoint(currentPoint);
+                    Point previousPoint = polygon.getPoint(polygon.getSize() - 1);
+                    polygon.addPoint(createPointWithAdjustedPosition(previousPoint.getX(), previousPoint.getY(), e.getX(), e.getY()));
                 }
-
-                drawScene();
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color));
 
                 drawScene();
             }
@@ -85,7 +80,12 @@ public class Controller2D {
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color));
+                if (snap) {
+                    Point previousPoint = polygon.getPoint(polygon.getSize() - 2);
+                    polygon.replaceLastPoint(createPointWithAdjustedPosition(previousPoint.getX(), previousPoint.getY(), e.getX(), e.getY()));
+                } else {
+                    polygon.replaceLastPoint(new Point(e.getX(), e.getY(), color));
+                }
 
                 drawScene();
             }
@@ -114,6 +114,37 @@ public class Controller2D {
         g.drawString("[R] Change color", 10, 60);
         g.setColor(Color.WHITE);
 
+        if (snap) {
+            g.setColor(new Color(colors[0]));
+            g.drawString("[SHIFT] Snap ACTIVE", 10, 80);
+            g.setColor(Color.WHITE);
+        } else {
+            g.drawString("[SHIFT] Snap", 10, 80);
+        }
+
         g.dispose();
+    }
+
+    private Point createPointWithAdjustedPosition(int prevX, int prevY, int x, int y) {
+        if (!snap) {
+            return new Point(x, y, color);
+        }
+
+        int dX = Math.abs(x - prevX);
+        int dY = Math.abs(y - prevY);
+
+        if (dX > dY * 2) {
+            // dx is significantly higher than dy, horizontal
+            return new Point(x, prevY, color);
+        } else if (dY > dX * 2) {
+            // dy is significantly higher than dx, horizontal
+            return new Point(prevX, y, color);
+        } else {
+            // diagonal, insignificant difference
+            int distance = Math.max(dX, dY);
+            int signX = x > prevX ? 1 : -1;
+            int signY = y > prevY ? 1 : -1;
+            return new Point(prevX + signX * distance, prevY + signY * distance, color);
+        }
     }
 }
